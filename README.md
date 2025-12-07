@@ -1,14 +1,15 @@
-# CWA 天氣預報 API 服務
+# 森森丸天氣 API 服務 (Node.js + CWA)
 
-這是一個使用 Node.js + Express 開發的天氣預報 API 服務，串接中央氣象署（CWA）開放資料平台，提供高雄市天氣預報資料。
+這是一個使用 Node.js + Express 開發的動態天氣預報 API 服務，串接中央氣象署（CWA）開放資料平台。本服務的核心是提供台灣各縣市的 36 小時天氣預報，以支援可愛的「森森丸天氣」前端網站。
 
 ## 功能特色
 
-- ✅ 串接 CWA 氣象資料開放平台
-- ✅ 取得高雄市 36 小時天氣預報
+- ✅ 串接 CWA 氣象資料開放平台 (F-C0032-001 資料集)。
+- ✅ 動態查詢：可透過 URL 參數查詢台灣各縣市天氣預報。
 - ✅ 環境變數管理
 - ✅ RESTful API 設計
 - ✅ CORS 支援
+- ✅ JSON 回傳數據已優化為純數值格式（溫度、降雨率），方便前端計算與渲染。
 
 ## 安裝步驟
 
@@ -70,9 +71,9 @@ GET /
 
 ```json
 {
-  "message": "歡迎使用 CWA 天氣預報 API",
+  "message": "歡迎使用 森森丸天氣 API",
   "endpoints": {
-    "kaohsiung": "/api/weather/kaohsiung",
+    "dynamicWeather": "/api/weather/:locationName",
     "health": "/api/health"
   }
 }
@@ -93,11 +94,18 @@ GET /api/health
 }
 ```
 
-### 3. 取得高雄天氣預報
+### 3. 取得動態城市天氣預報
 
+使用 URL 參數 locationName 傳遞城市名稱，後端將查詢 CWA 並回傳數據。
 ```
-GET /api/weather/kaohsiung
+GET /api/weather/:locationName
 ```
+
+範例呼叫：
+
+- GET /api/weather/臺北市
+- GET /api/weather/高雄市
+- GET /api/weather/新北市
 
 回應範例：
 
@@ -105,19 +113,20 @@ GET /api/weather/kaohsiung
 {
   "success": true,
   "data": {
-    "city": "高雄市",
-    "updateTime": "資料更新時間說明",
+    "city": "臺北市",
+    "updateTime": "2025-09-30T10:30:00+08:00",
     "forecasts": [
       {
         "startTime": "2025-09-30 18:00:00",
         "endTime": "2025-10-01 06:00:00",
         "weather": "多雲時晴",
-        "rain": "10%",
-        "minTemp": "25°C",
-        "maxTemp": "32°C",
+        "rain": 10,        // *** 僅回傳數值 ***
+        "minTemp": 25,     // *** 僅回傳數值 ***
+        "maxTemp": 32,     // *** 僅回傳數值 ***
         "comfort": "悶熱",
         "windSpeed": "偏南風 3-4 級"
       }
+      // ... 更多 36 小時預報數據 ...
     ]
   }
 }
